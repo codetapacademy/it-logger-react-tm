@@ -5,6 +5,7 @@ import {
     ADD_LOG, 
     DELETE_LOG,
     UPDATE_LOG,
+    SEARCH_LOGS,
     SET_CURRENT,
     CLEAR_CURRENT
  } from './types'
@@ -69,11 +70,11 @@ export const addLog = (log) => async dispatch => {
     }
 }
 // Delete log from server
-export const deleteLog = (id) => async dispatch => {
+export const deleteLog = id => async dispatch => {
     try {
         setLoading()
 
-        const res = await fetch(`/logs/${id}`, {
+        await fetch(`/logs/${id}`, {
             method: 'DELETE'
         })
 
@@ -94,7 +95,7 @@ export const updateLog = log => async dispatch => {
     try {
         setLoading()
 
-        await fetch(`/logs/${id}`, {
+        const res = await fetch(`/logs/${log.id}`, {
             method: 'PUT',
             body: JSON.stringify(log),
             headers: {
@@ -102,8 +103,30 @@ export const updateLog = log => async dispatch => {
             }
         })
 
+        const data = await res.json()
+
         dispatch({
             type: UPDATE_LOG,
+            payload: data
+        })
+    } catch (err) {
+        dispatch({
+            type:LOGS_ERROR,
+            payload: err.response.data
+        })
+    }
+}
+
+// Search server logs
+export const searchLogs = (text) => async dispatch => {
+    try {
+        setLoading()
+
+        const res = await fetch(`/logs?q=${text}`)
+        const data = await res.json()
+
+        dispatch({
+            type: SEARCH_LOGS,
             payload: data
         })
     } catch (err) {
@@ -123,10 +146,9 @@ export const setCurrent = log => {
 }
 
 // Clear curent log
-export const clearCurrent = log => {
+export const clearCurrent = () => {
     return {
-        type: CLEAR_CURRENT,
-        payload: log
+        type: CLEAR_CURRENT
     }
 }
 
