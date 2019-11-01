@@ -38,14 +38,14 @@ export const getLogs = () => async dispatch => {
             })
         } catch (err) {
             dispatch({
-                type:LOGS_ERROR,
+                type: LOGS_ERROR,
                 payload: err.response.statusText
             })
         }
 }
 
 // Add new log
-export const addLog = (log) => async dispatch => {
+export const addLog = log => async dispatch => {
     try {
         setLoading()
 
